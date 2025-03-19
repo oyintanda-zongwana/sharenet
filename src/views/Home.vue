@@ -11,29 +11,31 @@
       <table class="spots-table">
         <thead>
           <tr>
-            <th @click="sortBy('FullName')">Full Name</th>
-            <th @click="sortBy('Price')">Price</th>
-            <th @click="sortBy('Move')">Move</th>
-            <th @click="sortBy('PercentageMove')">Percentage Move</th>
-            <th @click="sortBy('Time')">Time</th>
+            <th @click="sortBy('fullName')">Full Name</th>
+            <th @click="sortBy('categoryName')">Category</th>
+            <th @click="sortBy('price')">Price</th>
+            <th @click="sortBy('move')">Move</th>
+            <th @click="sortBy('pmove')">% Move</th>
+            <th @click="sortBy('datetime')">Time</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="spot in sortedSpots" :key="spot.FullName">
-            <td>{{ spot.FullName }}</td>
-            <td>{{ spot.Price }}</td>
-            <td :class="{ positive: spot.Move > 0, negative: spot.Move < 0 }">
-              {{ spot.Move }}
+          <tr v-for="spot in sortedSpots" :key="spot.code">
+            <td>{{ spot.fullName }}</td>
+            <td>{{ spot.categoryName }}</td>
+            <td>{{ spot.price.toFixed(2) }}</td>
+            <td :class="{ positive: spot.move > 0, negative: spot.move < 0 }">
+              {{ spot.move.toFixed(2) }}
             </td>
             <td
               :class="{
-                positive: spot.PercentageMove > 0,
-                negative: spot.PercentageMove < 0,
+                positive: spot.pmove > 0,
+                negative: spot.pmove < 0,
               }"
             >
-              {{ spot.PercentageMove.toFixed(2) }}%
+              {{ spot.pmove.toFixed(2) }}%
             </td>
-            <td>{{ formatTime(spot.Time) }}</td>
+            <td>{{ formatTime(spot.datetime) }}</td>
           </tr>
         </tbody>
       </table>
@@ -46,18 +48,20 @@ import { defineComponent, ref, onMounted, computed } from "vue";
 import axios from "axios";
 
 interface Spot {
-  FullName: string;
-  Price: number;
-  Move: number;
-  PercentageMove: number;
-  Time: string;
+  fullName: string;
+  price: number;
+  move: number;
+  pmove: number;
+  datetime: string;
+  code: string;
+  categoryName: string;
 }
 
 export default defineComponent({
   name: "HomeView",
   setup() {
     const spots = ref<Spot[]>([]);
-    const sortKey = ref<keyof Spot>("FullName");
+    const sortKey = ref<keyof Spot>("fullName");
     const sortOrder = ref<"asc" | "desc">("asc");
     const error = ref<string | null>(null);
 
@@ -66,12 +70,12 @@ export default defineComponent({
         const response = await axios.get(
           "https://api.sharenet.co.za/api/v1/px2/spots"
         );
-        // Ensure we have an array of spots
-        const data = response.data;
+        // Extract spots array from response
+        const data = response.data?.spots || [];
         spots.value = Array.isArray(data) ? data : [];
         error.value = null;
-      } catch (error) {
-        console.error("Error fetching spots:", error);
+      } catch (err: any) {
+        console.error("Error fetching spots:", err);
         spots.value = [];
         error.value = "Failed to fetch spot prices. Please try again later.";
       }
@@ -121,6 +125,7 @@ export default defineComponent({
       sortedSpots,
       sortBy,
       formatTime,
+      error,
     };
   },
 });

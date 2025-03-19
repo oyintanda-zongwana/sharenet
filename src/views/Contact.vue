@@ -23,10 +23,10 @@
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3581.9024424301397!2d28.23737531501093!3d-26.20140938378927!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1e9510c2b0f0a9a9%3A0x1e9510c2b0f0a9a9!2sSharenet!5e0!3m2!1sen!2sza!4v1647600000000!5m2!1sen!2sza"
           width="100%"
           height="450"
-          style="border: 0"
+          style="border:0;"
           allowfullscreen=""
           loading="lazy"
-        >
+          referrerpolicy="no-referrer-when-downgrade">
         </iframe>
       </div>
     </div>
@@ -78,16 +78,16 @@ export default defineComponent({
   height: 450px;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 @media (max-width: 768px) {
   .contact-container {
     grid-template-columns: 1fr;
   }
-
+  
   .map-container {
     height: 300px;
   }
 }
-</style>
+</style> 
