@@ -79,8 +79,8 @@ export class WorkshopService {
       [workshop.title, workshop.date, workshop.venue, workshop.availableSeats, workshop.spotCode, workshop.spotName, workshop.categoryName]
     );
 
-    const insertResult = result as mysql.InsertResult;
-    return { ...workshop, id: insertResult.insertId };
+    const insertId = (result as any).insertId;
+    return { ...workshop, id: insertId };
   }
 
   public async getAllWorkshops(): Promise<Workshop[]> {
