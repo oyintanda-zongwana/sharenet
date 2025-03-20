@@ -1,7 +1,11 @@
 import express from 'express';
 import cors from 'cors';
-import { config } from './config';
-import workshopRoutes from './routes/workshopRoutes';
+import dotenv from 'dotenv';
+import config from './config';
+import workshopRoutes from './routes/workshops';
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
 
@@ -12,7 +16,13 @@ app.use(express.json());
 // Routes
 app.use('/api/workshops', workshopRoutes);
 
-// Start the server
-app.listen(config.port, () => {
-  console.log(`Server is running on port ${config.port}`);
+// Health check endpoint for Render
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
+// Start server
+const port = process.env.PORT || config.port;
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 }); 
