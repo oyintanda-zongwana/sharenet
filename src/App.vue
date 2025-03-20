@@ -1,45 +1,76 @@
 <template>
-  <nav class="navbar">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/contact">Contact</router-link> |
-    <router-link to="/workshops">Workshops</router-link>
-  </nav>
-  <router-view />
+  <div class="app">
+    <nav>
+      <div class="container">
+        <router-link to="/" class="logo">Sharenet</router-link>
+        <ul>
+          <li><router-link to="/">Home</router-link></li>
+          <li><router-link to="/workshops">Workshops</router-link></li>
+          <li><router-link to="/contact">Contact</router-link></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main>
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
+    </main>
+
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>About Sharenet</h3>
+          <p>Your trusted partner in workshop management and spot price tracking.</p>
+        </div>
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><router-link to="/">Home</router-link></li>
+            <li><router-link to="/workshops">Workshops</router-link></li>
+            <li><router-link to="/contact">Contact</router-link></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Contact Info</h3>
+          <ul>
+            <li>Email: info@sharenet.co.za</li>
+            <li>Phone: +27 123 456 789</li>
+            <li>Address: Cape Town, South Africa</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; {{ new Date().getFullYear() }} Sharenet. All rights reserved.</p>
+      </div>
+    </footer>
+  </div>
 </template>
 
+<script setup lang="ts">
+import './assets/styles/main.css'
+</script>
+
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
 }
 
-.navbar {
-  padding: 30px;
-  background-color: #f8f9fa;
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
-.navbar a {
-  font-weight: bold;
-  color: #2c3e50;
-  text-decoration: none;
-  padding: 10px;
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.navbar a.router-link-exact-active {
-  color: #42b983;
-}
-
-@media (max-width: 768px) {
-  .navbar {
-    padding: 15px;
-  }
-
-  .navbar a {
-    display: block;
-    padding: 5px;
-  }
+main {
+  flex: 1;
 }
 </style>
