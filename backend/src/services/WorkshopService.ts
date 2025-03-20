@@ -1,5 +1,5 @@
 import mysql from 'mysql2/promise';
-import { config } from '../config';
+import config from '../config';
 import { Workshop } from '../models/Workshop';
 import { SharenetService, Spot } from './SharenetService';
 
@@ -10,7 +10,7 @@ export class WorkshopService {
 
   private constructor() {
     this.sharenetService = SharenetService.getInstance();
-    this.pool = mysql.createPool(config.database);
+    this.pool = mysql.createPool(config.db);
     this.initializeDatabase();
   }
 
@@ -118,5 +118,47 @@ export class WorkshopService {
       console.error('Error booking workshop:', error);
       throw new Error('Failed to book workshop');
     }
+  }
+
+  async findAll(): Promise<Workshop[]> {
+    const [rows] = await this.pool.query('SELECT * FROM workshops');
+    return rows as Workshop[];
+  }
+
+  async findById(id: number): Promise<Workshop | null> {
+    const [rows] = await this.pool.query('SELECT * FROM workshops WHERE id = ?', [id]);
+    const workshops = rows as Workshop[];
+    return workshops[0] || null;
+  }
+
+  async create(workshop: Workshop): Promise<Workshop> {
+    const [result] = await this.pool.query(
+      'INSERT INTO workshops (title, date, venue, availableSeats, spotCode, spotName, categoryName) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [workshop.title, workshop.date, workshop.venue, workshop.availableSeats, workshop.spotCode, workshop.spotName, workshop.categoryName]
+    );
+    const insertId = (result as any).insertId;
+    return this.findById(insertId) as Promise<Workshop>;
+  }
+
+  async update(id: number, workshop: Partial<Workshop>): Promise<Workshop | null> {
+    const updates = Object.entries(workshop)
+      .map(([key, value]) => `${key} = ?`)
+      .join(', ');
+    const values = [...Object.values(workshop), id];
+
+    await this.pool.query(
+      `UPDATE workshops SET ${updates} WHERE id = ?`,
+      values
+    );
+
+    return this.findById(id);
+  }
+
+  async delete(id: number): Promise<Workshop | null> {
+    const workshop = await this.findById(id);
+    if (workshop) {
+      await this.pool.query('DELETE FROM workshops WHERE id = ?', [id]);
+    }
+    return workshop;
   }
 } 

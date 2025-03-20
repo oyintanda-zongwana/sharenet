@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { config } from '../config';
+import config from '../config';
 
 export interface Spot {
   code: string;
@@ -13,10 +13,10 @@ export interface Spot {
 
 export class SharenetService {
   private static instance: SharenetService;
-  private readonly apiUrl: string;
+  private apiUrl: string;
 
   private constructor() {
-    this.apiUrl = config.sharenetApiUrl;
+    this.apiUrl = config.sharenetApi.url;
   }
 
   public static getInstance(): SharenetService {
@@ -33,6 +33,16 @@ export class SharenetService {
     } catch (error) {
       console.error('Error fetching spots from Sharenet:', error);
       throw new Error('Failed to fetch spots from Sharenet API');
+    }
+  }
+
+  async getSpotPrices(): Promise<any> {
+    try {
+      const response = await axios.get(this.apiUrl);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching spot prices:', error);
+      throw error;
     }
   }
 } 
